@@ -1,3 +1,8 @@
+NUM_CLASSES = 31
+
+AUDIO_SR = 16000
+AUDIO_LENGTH = 16000
+
 categories = {
     '_background_noise_': 4,
     'bed': 16,
@@ -30,4 +35,38 @@ categories = {
     'wow': 25,
     'yes': 28,
     'zero': 17
+    }
+
+inv_categories = {
+    0: 'stop',
+    1: 'nine',
+    2: 'off',
+    3: 'four',
+    4: '_background_noise_',
+    5: 'eight',
+    6: 'one',
+    7: 'bird',
+    8: 'dog',
+    9: 'no',
+    10: 'on',
+    11: 'seven',
+    12: 'cat',
+    13: 'left',
+    14: 'three',
+    15: 'tree',
+    16: 'bed',
+    17: 'zero',
+    18: 'happy',
+    19: 'sheila',
+    20: 'five',
+    21: 'down',
+    22: 'marvin',
+    23: 'six',
+    24: 'up',
+    25: 'wow',
+    26: 'house',
+    27: 'go',
+    28: 'yes',
+    29: 'two',
+    30: 'right'
     }

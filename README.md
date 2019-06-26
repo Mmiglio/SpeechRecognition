@@ -8,9 +8,11 @@
    - [x] Run it on colab 
    - [x] Share link here
  - [ ] Exploratory data analysis 
-   - [ ] Classes distribution
-   - [ ] Read .wav files
-   - [ ] Explore different audio features (discrete Wavelet transform, Mel filterbanks etc.)
+   - [x] Classes distribution
+   - [x] Read .wav files (scipy.io, librosa)
+   - [x] Deal with shorter files 
+   - [x] Explore different audio features (MFCC, Log Mel-filterbank, Log spectrogram)
+   - [ ] Process background noise files (Split them?). For the moment we can drop them.
  - [ ] Input pipeline using `tf.data` (tf 2.0)
    - [ ] Read .wav
    - [ ] Preprocessing
