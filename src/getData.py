@@ -1,11 +1,12 @@
-import os 
+import os
 import requests
 import tarfile
 
 # Dictionary containing categories + encoded value
 from constants import categories
 
-def downloadSpeechData(data_path = 'speechData/'):
+
+def downloadSpeechData(data_path='speechData/'):
     """
     Download google speech commands dataset
     """
@@ -27,13 +28,14 @@ def downloadSpeechData(data_path = 'speechData/'):
                 print('{} already exists. Skipping download.'.format(file_name))
             else:
                 downloadFile(url=url, file_name=file_name)
-            
+
             # extract downloaded file
             extractFile(file_name=file_name, directory=dataset_directory)
         else:
             print('Nothing to do.')
 
-def getDataDict(data_path = 'speechData/'):
+
+def getDataDict(data_path='speechData/'):
     """
     Get the list of .Wav files and relative label
     """
@@ -46,13 +48,13 @@ def getDataDict(data_path = 'speechData/'):
     # Find trainWavs as allFiles / {testWavs, valWavs}
     allFiles = list()
     for root, dirs, files in os.walk(data_path+'train/'):
-        allFiles += [root+'/'+ f for f in files if f.endswith('.wav')]
+        allFiles += [root+'/' + f for f in files if f.endswith('.wav')]
     trainWavs = list(set(allFiles)-set(valWavs)-set(testWavs))
 
     # Final evaluation set
     finalTestWavs = list()
     for root, dirs, files in os.walk(data_path+'test/'):
-        finalTestWavs += [root+'/'+ f for f in files if f.endswith('.wav')]
+        finalTestWavs += [root+'/' + f for f in files if f.endswith('.wav')]
 
     # Get labels
     valWavLabels = [getLabel(wav) for wav in valWavs]
@@ -61,10 +63,10 @@ def getDataDict(data_path = 'speechData/'):
     finalTestWavLabels = [getLabel(wav) for wav in finalTestWavs]
 
     # Create dictionaries containinf (file, labels)
-    trainData = {'files': trainWavs, 'labels':trainWavLabels}
-    valData = {'files': valWavs, 'labels':valWavLabels}
-    testData = {'files': testWavs, 'labels':testWavLabels}
-    finalTestData = {'files': finalTestWavs, 'labels':finalTestWavLabels}
+    trainData = {'files': trainWavs, 'labels': trainWavLabels}
+    valData = {'files': valWavs, 'labels': valWavLabels}
+    testData = {'files': testWavs, 'labels': testWavLabels}
+    finalTestData = {'files': finalTestWavs, 'labels': finalTestWavLabels}
 
     dataDict = {
         'train': trainData,
@@ -80,11 +82,12 @@ def downloadFile(url, file_name):
     """
     Download a file.
     """
-    data_request = requests.get(url)
-    
+    data_request = requests.get(url) 
+
     print('Downloading {} into {}'.format(url, file_name))
     with open(file_name, 'wb') as f:
         f.write(data_request.content)
+
 
 def extractFile(file_name, directory):
     """
@@ -98,6 +101,7 @@ def extractFile(file_name, directory):
     else:
         print('Unknown format.')
 
+
 def getLabel(file_name):
     """
     Get the label from file path
@@ -105,4 +109,3 @@ def getLabel(file_name):
     """
     category = file_name.split('/')[-2]
     return categories.get(category, categories['_background_noise_'])
-

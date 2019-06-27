@@ -1,5 +1,8 @@
 .DS_Store
 .cache
+.vscode
 speechData
 notebooks/.ipynb_checkpoints
+src/__pycache__
+src/*.pyc
 

@@ -4,7 +4,7 @@ AUDIO_SR = 16000
 AUDIO_LENGTH = 16000
 
 categories = {
-    '_background_noise_': 4,
+    '_background_noise_': 30,
     'bed': 16,
     'bird': 7,
     'cat': 12,
@@ -23,7 +23,7 @@ categories = {
     'off': 2,
     'on': 10,
     'one': 6,
-    'right': 30,
+    'right': 4,
     'seven': 11,
     'sheila': 19,
     'six': 23,
@@ -42,7 +42,7 @@ inv_categories = {
     1: 'nine',
     2: 'off',
     3: 'four',
-    4: '_background_noise_',
+    4: 'right',
     5: 'eight',
     6: 'one',
     7: 'bird',
@@ -68,5 +68,5 @@ inv_categories = {
     27: 'go',
     28: 'yes',
     29: 'two',
-    30: 'right'
+    30: '_background_noise_'
     }
