@@ -82,8 +82,7 @@ def downloadFile(url, file_name):
     """
     Download a file.
     """
-    data_request = requests.get(url) 
-
+    data_request = requests.get(url)
     print('Downloading {} into {}'.format(url, file_name))
     with open(file_name, 'wb') as f:
         f.write(data_request.content)

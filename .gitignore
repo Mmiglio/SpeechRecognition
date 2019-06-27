@@ -5,4 +5,5 @@ speechData
 notebooks/.ipynb_checkpoints
 src/__pycache__
 src/*.pyc
+src/mainTest.py
 
