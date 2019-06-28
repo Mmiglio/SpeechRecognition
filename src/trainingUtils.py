@@ -2,6 +2,7 @@ from python_speech_features import logfbank
 from scipy.io import wavfile
 import numpy as np
 import tensorflow as tf
+import os
 
 from constants import AUDIO_SR, AUDIO_LENGTH
 

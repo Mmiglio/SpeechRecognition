@@ -113,7 +113,7 @@ def getLabel(file_name):
 
 def getDataframe(data):
     """
-    Create a dataframe from a Dictionary
+    Create a dataframe from a Dictionary and remove _background_noise_
     """
     df = pd.DataFrame(data)
     df['category'] = df.apply(
