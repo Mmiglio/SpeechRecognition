@@ -1,6 +1,10 @@
+# Number of classes including _background_noise_
 NUM_CLASSES = 31
 
+# Sampling rate
 AUDIO_SR = 16000
+
+# Length of a single wav
 AUDIO_LENGTH = 16000
 
 categories = {

@@ -1,9 +1,10 @@
 import os
 import requests
 import tarfile
+import pandas as pd
 
 # Dictionary containing categories + encoded value
-from constants import categories
+from constants import categories, inv_categories
 
 
 def downloadSpeechData(data_path='speechData/'):
@@ -108,3 +109,16 @@ def getLabel(file_name):
     """
     category = file_name.split('/')[-2]
     return categories.get(category, categories['_background_noise_'])
+
+
+def getDataframe(data):
+    """
+    Create a dataframe from a Dictionary
+    """
+    df = pd.DataFrame(data)
+    df['category'] = df.apply(
+        lambda row: inv_categories[row['labels']], axis=1
+        )
+    df = df.loc[df['category'] != '_background_noise_', :]
+
+    return df
