@@ -50,3 +50,18 @@ def cnnModel(input_shape=(99, 40)):
     model.add(tf.keras.layers.Dense(30, activation='softmax'))
 
     return model
+
+
+def lstmModel(input_shape=(99, 40)):
+    '''
+    Long-Short-Term-Memory model
+    '''
+
+    model = tf.keras.models.Sequential()
+
+    model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(units=3, input_shape=input_shape)))
+    model.add(tf.keras.layers.Attention())
+    # model.add(tf.keras.layers.Dense(5)) # needed layer? also dense value?
+    model.add(tf.keras.layers.Activation('softmax'))
+
+    return model
