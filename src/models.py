@@ -65,7 +65,7 @@ def lstmAttModel(input_shape=(99, 40)):
     # LSTM Layer
     model.add(
         tf.keras.layers.Bidirectional(
-            tf.keras.layers.LSTM(60, return_sequences=True, dropout=0.2, padding='same')
+            tf.keras.layers.LSTM(60, return_sequences=True, dropout=0.2)
         ))
 
     # Classification Layer
