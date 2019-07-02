@@ -51,7 +51,7 @@ def cnnModel(input_shape=(99, 40)):
     return model
 
 
-def lstmAttModel(input_shape=(99, 40)):
+def rnnModel(input_shape=(99, 40)):
     '''
     Long-Short-Term-Memory model
     '''
@@ -62,11 +62,18 @@ def lstmAttModel(input_shape=(99, 40)):
     # Normalization Layer
     model.add(tf.keras.layers.BatchNormalization(input_shape=input_shape))
 
-    # LSTM Layer
+    # LSTM Layer with CPU
+    # model.add(
+    #     tf.keras.layers.Bidirectional(
+    #         tf.keras.layers.LSTM(60, return_sequences=True, dropout=0.2)
+    #     )
+    # )
+    # LSTM Layer with GPU
     model.add(
         tf.keras.layers.Bidirectional(
-            tf.keras.layers.LSTM(60, return_sequences=True, dropout=0.2)
-        ))
+            tf.keras.layers.CuDNNLSTM(60, return_sequences=True, dropout=0.2)
+        )
+    )
 
     # Classification Layers
     model.add(tf.keras.layers.Flatten())
