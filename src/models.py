@@ -51,7 +51,7 @@ def cnnModel(input_shape=(99, 40)):
     return model
 
 
-def lstmModel(input_shape=(99, 40)):
+def lstmAttModel(input_shape=(99, 40)):
     '''
     Long-Short-Term-Memory model
     '''
@@ -59,8 +59,23 @@ def lstmModel(input_shape=(99, 40)):
     # Model Base
     model = tf.keras.models.Sequential()
 
-    model.add(tf.keras.layers.GRU(60, input_shape=input_shape, dropout=0.2))
-    model.add(tf.keras.layers.Dense(60, activation='relu'))
-    model.add(tf.keras.layers.Dense(30, activation='softmax'))
+    # Normalization Layer
+    model.add(tf.keras.layers.BatchNormalization(input_shape=input_shape))
+
+    # LSTM Layer
+    model.add(
+        tf.keras.layers.Bidirectional(
+            tf.keras.layers.LSTM(60, return_sequences=True, dropout=0.2, padding='same')
+        ))
+
+    # Classification Layer
+    model.add(tf.keras.layers.Dense(64, activation='relu'))
+    model.add(tf.keras.layers.Dense(64, activation='softmax'))
 
     return model
+
+    # FUTURE GRU BASED MODEL
+
+    # model.add(tf.keras.layers.GRU(60, input_shape=input_shape, dropout=0.2))
+    # model.add(tf.keras.layers.Dense(60, activation='relu'))
+    # model.add(tf.keras.layers.Dense(30, activation='softmax'))
