@@ -68,7 +68,7 @@ def lstmModel(input_shape=(99, 40)):
     # model.add(tf.keras.layers.GRU(60))
 
     # Convolutional Layers
-    model.add(tf.keras.layers.Conv2D(60, kernel_size=(3, 3), paddding='same'))
+    model.add(tf.keras.layers.Conv2D(60, kernel_size=(3, 3), padding='same'))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Activation('relu'))
 
