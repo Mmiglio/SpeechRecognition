@@ -70,7 +70,7 @@ def lstmAttModel(input_shape=(99, 40)):
 
     # Classification Layers
     model.add(tf.keras.layers.Flatten())
-    model.add(tf.keras.layers.Dense(60, activation='relu'))
+    model.add(tf.keras.layers.Dense(512, activation='relu'))
     model.add(tf.keras.layers.Dense(30, activation='softmax'))
 
     return model
