@@ -56,14 +56,4 @@ def lstmModel(input_shape=(99, 40)):
     '''
     Long-Short-Term-Memory model
     '''
-
-    model = tf.keras.models.Sequential()
-
-    model.add(tf.keras.layers.Reshape(input_shape=input_shape, target_shape=(99, 40, 1)))
-
-    model.add(tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(units=3)))
-    model.add(tf.keras.layers.Attention())
-    model.add(tf.keras.layers.Dense(30))
-    model.add(tf.keras.layers.Activation('softmax'))
-
-    return model
+    
