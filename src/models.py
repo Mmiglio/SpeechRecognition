@@ -78,7 +78,7 @@ def lstmModel(input_shape=(99, 40)):
     ))
     
     # Classification Layers
-    model.add(tf.keras.layers.Dense(60))
-    model.add(tf.keras.layers.Dense(30))
+    model.add(tf.keras.layers.Dense(60, activation='relu'))
+    model.add(tf.keras.layers.Dense(30, activation='softmax'))
 
     return model
