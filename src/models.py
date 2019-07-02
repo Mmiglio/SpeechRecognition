@@ -68,7 +68,8 @@ def lstmAttModel(input_shape=(99, 40)):
             tf.keras.layers.LSTM(60, return_sequences=True, dropout=0.2)
         ))
 
-    # Classification Layer
+    # Classification Layers
+    model.add(tf.keras.layers.Flatten())
     model.add(tf.keras.layers.Dense(60, activation='relu'))
     model.add(tf.keras.layers.Dense(30, activation='softmax'))
 
