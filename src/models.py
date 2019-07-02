@@ -1,6 +1,4 @@
 import tensorflow as tf
-import numpy as np
-
 
 def cnnModel(input_shape=(99, 40)):
     """
@@ -60,5 +58,9 @@ def lstmModel(input_shape=(99, 40)):
     
     # Model Base
     model = tf.keras.models.Sequential()
+
+    model.add(tf.keras.layers.GRU(60, input_shape=input_shape, dropout=0.2))
+    model.add(tf.keras.layers.Dense(60, activation='relu'))
+    model.add(tf.keras.layers.Dense(30, activation='softmax'))
 
     return model
