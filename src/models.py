@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 
 def cnnModel(input_shape=(99, 40)):
@@ -72,11 +73,18 @@ def lstmModel(input_shape=(99, 40)):
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Activation('relu'))
 
+    # Layer adaptation to fit Bidirectional input
+    model.add(tf.keras.layers.Lambda(lambda x: x[:, np.newaxis, np.newaxis, :, :]))
+
     # Convolutional LSTM Layers
     model.add(tf.keras.layers.Bidirectional(
         tf.keras.layers.ConvLSTM2D(60, kernel_size=(3, 3), padding='same', return_sequences=True, dropout=0.2)
     ))
     
+    # Layer revert to original shape
+    model.add(tf.keras.layers.Lambda(lambda x: tf.keras.backend.squeeze(x, axis=1)))
+    model.add(tf.keras.layers.Lambda(lambda x: tf.keras.backend.squeeze(x, axis=1)))
+
     # Classification Layers
     model.add(tf.keras.layers.Dense(60, activation='relu'))
     model.add(tf.keras.layers.Dense(30, activation='softmax'))
