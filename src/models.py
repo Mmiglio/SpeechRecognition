@@ -56,4 +56,29 @@ def lstmModel(input_shape=(99, 40)):
     '''
     Long-Short-Term-Memory model
     '''
-    pass
+    
+    # Model Base
+    model = tf.keras.models.Sequential()
+
+    # Normalization Layers
+    model.add(tf.keras.layers.Reshape(input_shape=input_shape, target_shape=(99, 40, 1)))
+    model.add(tf.keras.layers.BatchNormalization())
+
+    # Performance Layers
+    model.add(tf.keras.layers.GRU(60))
+
+    # Convolutional Layers
+    model.add(tf.keras.layers.Conv2D(60, kernel_size=(3, 3), paddding='same'))
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.Activation('relu'))
+
+    # Convolutional LSTM Layers
+    model.add(tf.keras.layers.Bidirectional(
+        tf.keras.layers.ConvLSTM2D(60, kernel_size=(3, 3), padding='same', return_sequences=True, dropout=0.2)
+    ))
+    
+    # Classification Layers
+    model.add(tf.keras.layers.Dense(60))
+    model.add(tf.keras.layers.Dense(30))
+
+    return model
