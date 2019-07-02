@@ -61,32 +61,4 @@ def lstmModel(input_shape=(99, 40)):
     # Model Base
     model = tf.keras.models.Sequential()
 
-    # Normalization Layers
-    model.add(tf.keras.layers.Reshape(input_shape=input_shape, target_shape=(99, 40, 1)))
-    model.add(tf.keras.layers.BatchNormalization())
-
-    # Performance Layers
-    # model.add(tf.keras.layers.GRU(60))
-
-    # Convolutional Layers
-    model.add(tf.keras.layers.Conv2D(60, kernel_size=(3, 3), padding='same'))
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.Activation('relu'))
-
-    # Layer adaptation to fit Bidirectional input
-    model.add(tf.keras.layers.Lambda(lambda x: x[:, np.newaxis, np.newaxis, :, :]))
-
-    # Convolutional LSTM Layers
-    model.add(tf.keras.layers.Bidirectional(
-        tf.keras.layers.ConvLSTM2D(60, kernel_size=(3, 3), padding='same', return_sequences=True, dropout=0.2)
-    ))
-    
-    # Layer revert to original shape
-    model.add(tf.keras.layers.Lambda(lambda x: tf.keras.backend.squeeze(x, axis=1)))
-    model.add(tf.keras.layers.Lambda(lambda x: tf.keras.backend.squeeze(x, axis=1)))
-
-    # Classification Layers
-    model.add(tf.keras.layers.Dense(60, activation='relu'))
-    model.add(tf.keras.layers.Dense(30, activation='softmax'))
-
     return model
