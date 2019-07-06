@@ -7,7 +7,7 @@ import os
 from constants import AUDIO_SR, AUDIO_LENGTH
 
 
-def getDataset(df, batch_size, cache_file=None, shuffle=True):
+def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=False):
     """
     Return a tf.data.Dataset containg filterbanks, labels
     """
@@ -17,7 +17,7 @@ def getDataset(df, batch_size, cache_file=None, shuffle=True):
 
     data = data.map(
         lambda filename, label: tuple(
-            tf.py_function(_parse_fn, inp=[filename, label], Tout=[tf.float32, tf.int32])
+            tf.py_function(_parse_fn, inp=[filename, label, nfilt, scale], Tout=[tf.float32, tf.int32])
         ),
         num_parallel_calls=os.cpu_count()
     )
@@ -49,7 +49,7 @@ def _loadWavs(filename):
     return wave.astype(np.float32)
 
 
-def _logMelFilterbank(wave):
+def _logMelFilterbank(wave, nfilt=40):
     """
     Compute the log Mel-Filterbanks
     Returns a numpy array of shape (99, nfilt) = (99,40)
@@ -60,15 +60,31 @@ def _logMelFilterbank(wave):
         winlen=0.025,
         winstep=0.01,
         highfreq=AUDIO_SR/2,
-        nfilt=40
+        nfilt=nfilt
         )
-    return fbank.astype(np.float32)
+
+    fbank = fbank.astype(np.float32)
+    return fbank
 
 
-def _parse_fn(filename, label):
+def _scale(data):
+    """
+    Scale input values in range [0,1]
+    """
+    min_value, max_value = np.min(data), np.max(data)
+    diff = max_value - min_value
+    if diff == 0:
+        diff += 0.00001
+    scaled = (data - min_value) / diff
+    return scaled
+
+
+def _parse_fn(filename, label, nfilt=40, scale=False):
     """
     Function used to compute filterbanks from file name
     """
     wave = _loadWavs(filename.numpy())
-    fbank = _logMelFilterbank(wave)
+    fbank = _logMelFilterbank(wave, nfilt)
+    if scale:
+        fbank = _scale(fbank)
     return fbank, np.asarray(label).astype(np.int32)
