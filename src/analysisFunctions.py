@@ -75,3 +75,34 @@ def plot_confusion_matrix(cm,
     plt.ylabel('True label', fontsize=30)
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass), fontsize=30)
     plt.show()
+
+
+def showResultsOC(y_pred, y_true):
+    """
+    Print statistics for the current prediction
+    """
+    from sklearn.metrics import (
+        accuracy_score, recall_score,
+        precision_score, f1_score,
+        confusion_matrix
+    )
+    import seaborn as sns
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    print("Accuracy: {:.4f}".format(accuracy_score(y_true, y_pred)))
+    print("Precision: {:.4f}".format(precision_score(y_true, y_pred)))
+    print("Recal: {:.4f}".format(recall_score(y_true, y_pred)))
+    print("F1-score: {:.4f}".format(f1_score(y_true, y_pred)))
+
+    cm = confusion_matrix(y_pred, y_true).T
+    df_cm = pd.DataFrame(cm, ['Other', 'Marvin'], ['Other', 'Marvin'])
+
+    fig = plt.figure(figsize=(6, 6))
+    _ = sns.heatmap(df_cm, cmap='Blues', fmt='g', annot=True, annot_kws={"size": 16}, cbar=False)
+    plt.title('Confusion matrix', fontsize=20)
+    plt.ylabel('True class', fontsize=15)
+    plt.xlabel('Predicted class', fontsize=15)
+
+    plt.tight_layout()
+    plt.show()

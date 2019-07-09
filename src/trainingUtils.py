@@ -17,7 +17,11 @@ def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=Fa
 
     data = data.map(
         lambda filename, label: tuple(
-            tf.py_function(_parse_fn, inp=[filename, label, nfilt, scale], Tout=[tf.float32, tf.int32])
+            tf.py_function(
+                _parse_fn,
+                inp=[filename, label, nfilt, scale],
+                Tout=[tf.float32, tf.int32]
+                )
         ),
         num_parallel_calls=os.cpu_count()
     )
@@ -29,6 +33,38 @@ def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=Fa
         data = data.shuffle(buffer_size=df.shape[0])
 
     data = data.batch(batch_size).prefetch(buffer_size=1)
+
+    steps = df.shape[0] // batch_size
+
+    return data, steps
+
+
+def getDatasetAutoencoder(df, batch_size, cache_file=None, shuffle=True, nfilt=40, add_noise=False, scale=False):
+    """
+    Return a tf.data.Dataset containg an image representing the filterbank
+    """
+    data = tf.data.Dataset.from_tensor_slices(
+        (df['files'].tolist(), df['labels'].tolist())
+    )
+
+    data = data.map(
+        lambda filename, label: tuple(
+            tf.py_function(
+                _parse_fn_autoencoder,
+                inp=[filename, label, nfilt, add_noise, scale],
+                Tout=[tf.float32, tf.float32]
+                )
+        ),
+        num_parallel_calls=os.cpu_count()
+    )
+
+    if cache_file:
+        data = data.cache(cache_file)
+
+    if shuffle:
+        data = data.shuffle(buffer_size=df.shape[0])
+
+    data = data.batch(batch_size).prefetch(buffer_size=2)
 
     steps = df.shape[0] // batch_size
 
@@ -67,21 +103,46 @@ def _logMelFilterbank(wave, nfilt=40):
     return fbank
 
 
+def _normalize(data):
+    """
+    Normalize feature vectors
+    """
+    mean = np.mean(data, axis=0)
+    sd = np.std(data, axis=0)
+    return (data - mean) / (sd+1e-08)
+
+
 def _scale(data):
     """
     Scale input values in range [0,1]
     """
-    min_value, max_value = np.min(data), np.max(data)
-    diff = max_value - min_value
-    if diff == 0:
-        diff += 0.00001
-    scaled = (data - min_value) / diff
+    min_value, max_value = np.min(data, axis=0), np.max(data, axis=0)
+    scaled = (data - min_value) / (max_value - min_value + 1e-08)
     return scaled
+
+
+def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=True, scale=True):
+    """
+    Function used to compute filterbanks from file name.
+    Returns (image, image) for autoencoder training.
+    """
+    wave = _loadWavs(filename.numpy())
+    fbank = _logMelFilterbank(wave, nfilt)
+
+    if scale:
+        fbank = _scale(fbank)
+
+    input_image = fbank
+    if add_noise:
+        input_image = fbank + 0.5*np.random.normal(0, 1, fbank.shape)
+
+    return input_image, fbank
 
 
 def _parse_fn(filename, label, nfilt=40, scale=False):
     """
-    Function used to compute filterbanks from file name
+    Function used to compute filterbanks from file name.
+    Returns (image, label)
     """
     wave = _loadWavs(filename.numpy())
     fbank = _logMelFilterbank(wave, nfilt)
