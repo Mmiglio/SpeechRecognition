@@ -111,7 +111,7 @@ def getLabel(file_name):
     return categories.get(category, categories['_background_noise_'])
 
 
-def getDataframe(data):
+def getDataframe(data, include_unknown=False):
     """
     Create a dataframe from a Dictionary and remove _background_noise_
     """
@@ -119,6 +119,7 @@ def getDataframe(data):
     df['category'] = df.apply(
         lambda row: inv_categories[row['labels']], axis=1
         )
-    df = df.loc[df['category'] != '_background_noise_', :]
+    if not include_unknown:
+        df = df.loc[df['category'] != '_background_noise_', :]
 
     return df
