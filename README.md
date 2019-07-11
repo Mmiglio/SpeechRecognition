@@ -8,5 +8,5 @@
 - One-Class Classification: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Mmiglio/SpeechRecognition/blob/master/notebooks/OneClass_Marvin.ipynb)
 [![NBViewer](https://github.com/jupyter/design/blob/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/Mmiglio/SpeechRecognition/blob/master/notebooks/OneClass_Marvin.ipynb)
 
-- LSTM + Attention mechanisms: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/Mmiglio/SpeechRecognition/blob/Attention-Mechanism-and-Memory-Networks/notebooks/Rnn-attention_mechanisms.ipynb)
-[![NBViewer](https://github.com/jupyter/design/blob/master/logos/Badges/nbviewer_badge.svg)](https://github.com/Mmiglio/SpeechRecognition/blob/Attention-Mechanism-and-Memory-Networks/notebooks/Rnn-attention_mechanisms.ipynb)
+- LSTM + Attention mechanisms: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SpeechRecognition/blob/Attention-Mechanism-and-Memory-Networks/notebooks/Rnn-attention_mechanisms.ipynb)
+[![NBViewer](https://github.com/jupyter/design/blob/master/logos/Badges/nbviewer_badge.svg)](https://colab.research.google.com/github/Mmiglio/SpeechRecognition/blob/Attention-Mechanism-and-Memory-Networks/notebooks/Rnn-attention_mechanisms.ipynb)
