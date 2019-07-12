@@ -56,18 +56,22 @@ def cnnModel(input_shape=(99, 40)):
     return model
 
 
-def lstm_att_model(input_shape=(99, 40),
+def rnn_att_model(input_shape=(99, 40),
                    cnn_features=30,
-                   multi_lstm=True,
-                   attention=True):
+                   rnn='LSTM',
+                   multi_rnn=True,
+                   attention=True,
+                   dropout=0.2):
     '''
     Long-Short-Term-Memory model
 
     Parameters:\n
     input_shape (array): dimensions of the model input\n
     cnn_features (int): number of features for the first CNN Layer\n
-    multi_lstm (bool): activate or deactivate the second LSTM Layer\n
+    rnn (string [LSTM, GRU]): type of RNN to use in the model\n
+    multi_rnn (bool): activate or deactivate the second RNN Layer\n
     attention (bool): activate or deactivate the Attention Layer\n
+    dropout (int [0:1]): dropout level for Dense Layers
 
     Returns:\n
     tf.keras.Model: Model built with keras
@@ -92,11 +96,23 @@ def lstm_att_model(input_shape=(99, 40),
         lambda x: tf.keras.backend.squeeze(x, -1), name='squeeze_dim')(layer_out)
 
     # LSTM Layer
-    layer_out = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(
-        60, return_sequences=True, dropout=0.2))(layer_out)
-    if multi_lstm:
+    if rnn not in ['LSTM', 'GRU']:
+        raise ValueError('rnn should be equal to LSTM or GRU.\nNo model generated')
+
+    if rnn == 'LSTM':
         layer_out = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(
-            60, return_sequences=True, dropout=0.2))(layer_out)
+            60, return_sequences=True, dropout=dropout))(layer_out)
+        if multi_rnn:
+            layer_out = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(
+                60, return_sequences=True, dropout=dropout))(layer_out)
+
+    # GRU Layer
+    if rnn == 'GRU':
+        layer_out = tf.keras.layers.GRU(
+            60, input_shape=input_shape, dropout=0.2)(layer_out)
+        if multi_rnn:
+            layer_out = tf.keras.layers.GRU(
+                60, input_shape=input_shape, dropout=0.2)(layer_out)
 
     # Attention Layer
     if attention:
@@ -112,9 +128,3 @@ def lstm_att_model(input_shape=(99, 40),
     # Output Model
     model = tf.keras.Model(inputs=[inputs], outputs=[outputs])
     return model
-
-    # FUTURE GRU BASED MODEL
-
-    # model.add(tf.keras.layers.GRU(60, input_shape=input_shape, dropout=0.2))
-    # model.add(tf.keras.layers.Dense(60, activation='relu'))
-    # model.add(tf.keras.layers.Dense(30, activation='softmax'))
