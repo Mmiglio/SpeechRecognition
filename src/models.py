@@ -1,4 +1,9 @@
+'''
+Models implementations
+'''
+
 import tensorflow as tf
+
 
 def cnnModel(input_shape=(99, 40)):
     """
