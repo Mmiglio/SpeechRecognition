@@ -57,11 +57,11 @@ def cnnModel(input_shape=(99, 40)):
 
 
 def rnn_att_model(input_shape=(99, 40),
-                   cnn_features=30,
-                   rnn='LSTM',
-                   multi_rnn=True,
-                   attention=True,
-                   dropout=0.2):
+                  cnn_features=30,
+                  rnn='LSTM',
+                  multi_rnn=True,
+                  attention=True,
+                  dropout=0.2):
     '''
     Long-Short-Term-Memory model
 
@@ -97,7 +97,8 @@ def rnn_att_model(input_shape=(99, 40),
 
     # LSTM Layer
     if rnn not in ['LSTM', 'GRU']:
-        raise ValueError('rnn should be equal to LSTM or GRU.\nNo model generated')
+        raise ValueError(
+            'rnn should be equal to LSTM or GRU. No model generated...')
 
     if rnn == 'LSTM':
         layer_out = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(
@@ -108,11 +109,11 @@ def rnn_att_model(input_shape=(99, 40),
 
     # GRU Layer
     if rnn == 'GRU':
-        layer_out = tf.keras.layers.GRU(
-            60, input_shape=input_shape, dropout=0.2)(layer_out)
+        layer_out = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(
+            60, return_sequences=True, dropout=dropout))(layer_out)
         if multi_rnn:
-            layer_out = tf.keras.layers.GRU(
-                60, input_shape=input_shape, dropout=0.2)(layer_out)
+            layer_out = tf.keras.layers.Bidirectional(tf.keras.layers.GRU(
+                60, return_sequences=True, dropout=dropout))(layer_out)
 
     # Attention Layer
     if attention:
