@@ -120,9 +120,12 @@ def rnn_att_model(input_shape=(99, 40),
         query, value = tf.keras.layers.Lambda(
             lambda x: tf.split(x, num_or_size_splits=2, axis=2))(layer_out)
         attention = tf.keras.layers.Attention(name='Attention')([query, value])
-        layer_out = attention
+
     # Classification Layer
-    outputs = tf.keras.layers.Flatten()(layer_out)
+    if attention:
+        outputs = tf.keras.layers.Flatten()(attention)
+    else:
+        outputs = tf.keras.layers.Flatten()(layer_out)
     outputs = tf.keras.layers.Dense(512, activation='relu')(outputs)
     outputs = tf.keras.layers.Dense(30, activation='softmax')(outputs)
 
