@@ -56,27 +56,27 @@ def cnnModel(input_shape=(99, 40)):
 
 def smallCnnModel(input_shape=(99, 40)):
     """
-    Model with 145k parameters.
-    Accuracy = 0.94
+    Model with 150k parameters.
+    Accuracy = 0.95
     """
 
     model = tf.keras.models.Sequential()
 
     model.add(tf.keras.layers.Reshape(input_shape=input_shape, target_shape=(99, 40, 1)))
 
-    model.add(tf.keras.layers.Convolution2D(64, (1, 5), padding='same', activation='linear'))
+    model.add(tf.keras.layers.Convolution2D(32, (1, 10), padding='same', activation='relu'))
+    model.add(tf.keras.layers.Convolution2D(64, (1, 5), padding='same', activation='relu'))
     model.add(tf.keras.layers.MaxPooling2D((1, 4)))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Dropout(0.2))
 
     model.add(tf.keras.layers.Convolution2D(64, (1, 10), padding='valid', activation='relu'))
     model.add(tf.keras.layers.Convolution2D(128, (10, 1), padding='same', activation='relu'))
+
     model.add(tf.keras.layers.GlobalMaxPooling2D())
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Dropout(0.4))
-
-    model.add(tf.keras.layers.Dense(128, activation='relu'))
-
+    model.add(tf.keras.layers.Dense(128, activation='relu', name='FEATURES'))
     model.add(tf.keras.layers.Dense(30, activation='softmax'))
 
     return model

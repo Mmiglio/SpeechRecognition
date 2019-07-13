@@ -130,7 +130,7 @@ def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=True, scale=True)
     fbank = _logMelFilterbank(wave, nfilt)
 
     if scale:
-        fbank = _scale(fbank)
+        fbank = _normalize(fbank)
 
     input_image = fbank
     if add_noise:
@@ -147,5 +147,5 @@ def _parse_fn(filename, label, nfilt=40, scale=False):
     wave = _loadWavs(filename.numpy())
     fbank = _logMelFilterbank(wave, nfilt)
     if scale:
-        fbank = _scale(fbank)
+        fbank = _normalize(fbank)
     return fbank, np.asarray(label).astype(np.int32)
