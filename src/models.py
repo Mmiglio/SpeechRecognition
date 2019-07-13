@@ -7,7 +7,8 @@ import tensorflow as tf
 
 def cnnModel(input_shape=(99, 40)):
     """
-    Model consisting of 4 convolution blocks
+    Model consisting of 4 convolution blocks. 1.2M parameters
+    Accuracy = 0.96
     """
 
     model = tf.keras.models.Sequential()
@@ -45,12 +46,41 @@ def cnnModel(input_shape=(99, 40)):
 
     # Classification layers
     model.add(tf.keras.layers.Flatten())
-    model.add(tf.keras.layers.Dense(512))
+    model.add(tf.keras.layers.Dropout(0.4))
     model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.Activation('relu'))
-    # linear
+    model.add(tf.keras.layers.Dense(512, activation='relu'))
+    model.add(tf.keras.layers.Dropout(0.4))
+    model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Dense(256, activation='relu'))
-    # softmax
+    model.add(tf.keras.layers.Dropout(0.4))
+    model.add(tf.keras.layers.Dense(30, activation='softmax'))
+
+    return model
+
+
+def smallCnnModel(input_shape=(99, 40)):
+    """
+    Model with 150k parameters.
+    Accuracy = 0.95
+    """
+
+    model = tf.keras.models.Sequential()
+
+    model.add(tf.keras.layers.Reshape(input_shape=input_shape, target_shape=(99, 40, 1)))
+
+    model.add(tf.keras.layers.Convolution2D(32, (1, 10), padding='same', activation='relu'))
+    model.add(tf.keras.layers.Convolution2D(64, (1, 5), padding='same', activation='relu'))
+    model.add(tf.keras.layers.MaxPooling2D((1, 4)))
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.Dropout(0.2))
+
+    model.add(tf.keras.layers.Convolution2D(64, (1, 10), padding='valid', activation='relu'))
+    model.add(tf.keras.layers.Convolution2D(128, (10, 1), padding='same', activation='relu'))
+
+    model.add(tf.keras.layers.GlobalMaxPooling2D())
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.Dropout(0.4))
+    model.add(tf.keras.layers.Dense(128, activation='relu', name='FEATURES'))
     model.add(tf.keras.layers.Dense(30, activation='softmax'))
 
     return model
