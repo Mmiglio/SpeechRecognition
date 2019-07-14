@@ -144,7 +144,7 @@ def _rhythm(wave):
     '''
     hop_length = 40  # samples per frame
     onset_env = librosa.onset.onset_strength(
-        wave, hop_length=hop_length, n_fft=2048)
+        wave, hop_length=hop_length)
 
     # _stft = librosa.stft(onset_env, hop_length=1, n_fft=512)
     # fourier_tempogram = np.absolute(_stft)
