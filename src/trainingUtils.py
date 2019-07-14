@@ -153,7 +153,7 @@ def _rhythm(wave):
 
     tempogram = librosa.feature.tempogram(
         onset_envelope=onset_env, hop_length=hop_length, win_length=99)
-
+    print(tempogram.shape())
     return tempogram
 
 def _normalize(data):
