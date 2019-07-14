@@ -3,7 +3,7 @@ from scipy.io import wavfile
 import numpy as np
 import tensorflow as tf
 import os
-from librosa.feature import tempogram
+import librosa
 
 from constants import AUDIO_SR, AUDIO_LENGTH
 
@@ -136,21 +136,21 @@ def _logMelFilterbank(wave, nfilt=40):
     return fbank
 
 
-def _rhythm(wave, envelope=40):
+def _rhythm(wave):
     '''
     Compute rhythm feature for waves
 
     Returns a numpy array of shape (99, envelope) = (99,40)
     '''
-    rhythm_feature = tempogram(
-        wave,
-        sr=16000,
-        onset_envelope=envelope,
-        win_length=99
-    )
+    hop_length = 99  # samples per frame
+    onset_env = librosa.onset.onset_strength(
+        wave, sr=16000, hop_length=hop_length, n_fft=2048)
 
-    rhythm_feature = rhythm_feature.astype(np.float32)
-    return rhythm_feature
+    _stft = librosa.stft(onset_env, hop_length=1, n_fft=512)
+    fourier_tempogram = np.absolute(_stft)
+
+    fourier_tempogram = fourier_tempogram.astype(np.float32)
+    return fourier_tempogram
 
 def _normalize(data):
     """
@@ -206,5 +206,5 @@ def _parse_fn_rhythm(filename, label, nfilt=40):
     Returns (image, label)
     """
     wave = _loadWavs(filename.numpy())
-    fbank = _rhythm(wave, nfilt)
+    fbank = _rhythm(wave)
     return fbank, np.asarray(label).astype(np.int32)
