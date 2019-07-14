@@ -3,11 +3,12 @@ from scipy.io import wavfile
 import numpy as np
 import tensorflow as tf
 import os
+from librosa.feature import tempogram
 
 from constants import AUDIO_SR, AUDIO_LENGTH
 
 
-def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=False):
+def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=False, feature='logmel'):
     """
     Return a tf.data.Dataset containg filterbanks, labels
     """
@@ -19,7 +20,7 @@ def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=Fa
         lambda filename, label: tuple(
             tf.py_function(
                 _parse_fn,
-                inp=[filename, label, nfilt, scale],
+                inp=[filename, label, nfilt, scale, feature],
                 Tout=[tf.float32, tf.int32]
                 )
         ),
@@ -103,6 +104,23 @@ def _logMelFilterbank(wave, nfilt=40):
     return fbank
 
 
+def _rhythm(wave, envelope=40):
+    '''
+    Compute rhythm feature for waves
+
+    Returns a numpy array of shape (99, nfilt) = (99,?)
+    '''
+    rhythm_feature = tempogram(
+        wave,
+        sr=16000,
+        onset_envelope=envelope,
+        hop_length=0.01,
+        win_length=0.025,
+    )
+
+    rhythm_feature = rhythm_feature.astype(np.float32)
+    return rhythm_feature
+
 def _normalize(data):
     """
     Normalize feature vectors
@@ -139,13 +157,19 @@ def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=True, scale=True)
     return input_image, fbank
 
 
-def _parse_fn(filename, label, nfilt=40, scale=False):
+def _parse_fn(filename, label, nfilt=40, scale=False, feature='logmel'):
     """
     Function used to compute filterbanks from file name.
     Returns (image, label)
     """
-    wave = _loadWavs(filename.numpy())
-    fbank = _logMelFilterbank(wave, nfilt)
+    if feature not in ['logmel', 'rhythm']:
+        raise ValueError('_parse_fn: feature should be of type logmel or rhythm...')
+    if feature == 'logmel':
+        wave = _loadWavs(filename.numpy())
+        fbank = _logMelFilterbank(wave, nfilt)
+    if feature == 'rhythm':
+        wave = _loadWavs(filename.numpy())
+        fbank = _rhythm(wave, nfilt)
     if scale:
         fbank = _normalize(fbank)
     return fbank, np.asarray(label).astype(np.int32)
