@@ -208,4 +208,4 @@ def _parse_fn_rhythm(filename, label, nfilt=40):
     """
     wave = _loadWavs(filename.numpy())
     fbank = _rhythm(wave, nfilt)
-    return fbank, np.asarray(label).astype(np.int32))
+    return fbank, np.asarray(label).astype(np.int32)
