@@ -7,3 +7,9 @@
 
 - One-Class Classification: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Mmiglio/SpeechRecognition/blob/master/notebooks/OneClass_Marvin.ipynb)
 [![NBViewer](https://github.com/jupyter/design/blob/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/Mmiglio/SpeechRecognition/blob/master/notebooks/OneClass_Marvin.ipynb)
+
+- Residual Network: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Mmiglio/SpeechRecognition/blob/master/notebooks/Resnet.ipynb)
+[![NBViewer](https://github.com/jupyter/design/blob/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/Mmiglio/SpeechRecognition/blob/master/notebooks/Resnet.ipynb)
+
+- Inception Network: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Mmiglio/SpeechRecognition/blob/master/notebooks/Inception.ipynb)
+[![NBViewer](https://github.com/jupyter/design/blob/master/logos/Badges/nbviewer_badge.svg)](https://nbviewer.jupyter.org/github/Mmiglio/SpeechRecognition/blob/master/notebooks/Inception.ipynb)

@@ -80,3 +80,119 @@ def smallCnnModel(input_shape=(99, 40)):
     model.add(tf.keras.layers.Dense(30, activation='softmax'))
 
     return model
+
+
+def Inception(input_shape=(99, 40)):
+    """
+    Neural network containing inception modules
+    Accuracy = 0.955
+    """
+
+    def inceptionModule(x_input, n):
+        """
+        Full inception module.
+        Graphic representation: https://i.stack.imgur.com/vGIfJ.png
+        """
+        # Conv 1x1
+        conv_1x1 = Conv2D(n, (1, 1), padding='same', activation='relu')(x_input)
+
+        # Conv 3x3
+        conv_3x3 = Conv2D(n, (1, 1), padding='same', activation='relu')(x_input)
+        conv_3x3 = Conv2D(n, (3, 3), padding='same', activation='relu')(conv_3x3)
+
+        # Conv 5x5
+        conv_5x5 = Conv2D(n, (1, 1), padding='same', activation='relu')(x_input)
+        conv_5x5 = Conv2D(n, (3, 3), padding='same', activation='relu')(conv_5x5)
+
+        # pool + proj
+        pool = MaxPooling2D((3, 3), strides=(1, 1), padding='same')(x_input)
+        pool = Conv2D(n, (1, 1), padding='same', activation='relu')(pool)
+
+        output = concatenate([conv_1x1, conv_3x3, conv_5x5, pool], axis=3)
+
+        return output
+
+    input_layer = Input(input_shape)
+
+    reshape_layer = tf.keras.layers.Reshape(input_shape=input_shape, target_shape=(99, 40, 1))(input_layer)
+
+    x = tf.keras.layers.Conv2D(32, (6, 4), padding='same', strides=(2, 2), activation='relu')(reshape_layer)
+    x = tf.keras.layers.MaxPooling2D((3, 2), padding='same', strides=(1, 1))(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+
+    x = inceptionModule(x, 32)
+    x = inceptionModule(x, 64)
+    x = tf.keras.layers.MaxPooling2D((3, 2))(x)
+
+    x = inceptionModule(x, 64)
+    x = inceptionModule(x, 128)
+
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    x = tf.keras.layers.Dropout(0.5)(x)
+
+    x = tf.keras.layers.Dense(256, activation='relu')(x)
+
+    x = tf.keras.layers.Dense(30, activation='softmax')(x)
+
+    model = tf.keras.models.Model(input_layer, x)
+    return model
+
+
+def resNet(input_shape=(99, 40)):
+    """
+    Neural network with residual blocks
+    Accuracy = 0.96
+    """
+    def residualModule(layer_in, n_filters):
+        """
+        Residual block
+        """
+        merge_input = layer_in
+        # check if the number of filters needs to be increased
+        if layer_in.shape[-1] != n_filters:
+            merge_input = Conv2D(
+                n_filters, (1, 1), padding='same',
+                activation='relu',
+                kernel_initializer='he_normal')(layer_in)
+
+        conv1 = Conv2D(
+            n_filters, (3, 3), padding='same',
+            activation='relu',
+            kernel_initializer='he_normal')(layer_in)
+
+        conv2 = Conv2D(
+            n_filters, (3, 3), padding='same',
+            activation='linear',
+            kernel_initializer='he_normal')(conv1)
+
+        # add filters
+        layer_out = add([conv2, merge_input])
+        layer_out = BatchNormalization()(layer_out)
+        layer_out = Activation('relu')(layer_out)
+
+        return layer_out
+
+    input_layer = tf.keras.layers.Input(input_shape)
+
+    reshape_layer = tf.keras.layers.Reshape(input_shape=input_shape, target_shape=(99, 40, 1))(input_layer)
+
+    x = tf.keras.layers.Conv2D(64, (6, 4), padding='same', strides=(2, 2), activation='relu')(reshape_layer)
+    x = tf.keras.layers.MaxPooling2D((3, 2), padding='same', strides=(1, 1))(x)
+    x = BatchNormalization()(x)
+
+    x = residualModule(x, 64)
+    x = residualModule(x, 128)
+    x = tf.keras.layers.MaxPooling2D((3, 2))(x)
+
+    x = tf.keras.layers.residualModule(x, 128)
+    x = tf.keras.layers.residualModule(x, 256)
+
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+
+    x = tf.keras.layers.Dense(64, activation='relu')(x)
+
+    x = tf.keras.layers.Dense(30, activation='softmax')(x)
+
+    model = tf.keras.models.Model(input_layer, x, name='Resnet')
+    return model
