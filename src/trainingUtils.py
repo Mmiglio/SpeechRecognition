@@ -8,7 +8,7 @@ from librosa.feature import tempogram
 from constants import AUDIO_SR, AUDIO_LENGTH
 
 
-def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=False, feature='logmel'):
+def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=False):
     """
     Return a tf.data.Dataset containg filterbanks, labels
     """
@@ -20,7 +20,7 @@ def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=Fa
         lambda filename, label: tuple(
             tf.py_function(
                 _parse_fn,
-                inp=[filename, label, nfilt, scale, feature],
+                inp=[filename, label, nfilt, scale],
                 Tout=[tf.float32, tf.int32]
                 )
         ),
@@ -72,6 +72,38 @@ def getDatasetAutoencoder(df, batch_size, cache_file=None, shuffle=True, nfilt=4
     return data, steps
 
 
+def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=False):
+    """
+    Return a tf.data.Dataset containg filterbanks, labels
+    """
+    data = tf.data.Dataset.from_tensor_slices(
+        (df['files'].tolist(), df['labels'].tolist())
+    )
+
+    data = data.map(
+        lambda filename, label: tuple(
+            tf.py_function(
+                _parse_fn_rhythm,
+                inp=[filename, label, nfilt, scale],
+                Tout=[tf.float32, tf.int32]
+            )
+        ),
+        num_parallel_calls=os.cpu_count()
+    )
+
+    if cache_file:
+        data = data.cache(cache_file)
+
+    if shuffle:
+        data = data.shuffle(buffer_size=df.shape[0])
+
+    data = data.batch(batch_size).prefetch(buffer_size=1)
+
+    steps = df.shape[0] // batch_size
+
+    return data, steps
+
+
 def _loadWavs(filename):
     """
     Return a np array containing the wav.
@@ -108,14 +140,14 @@ def _rhythm(wave, envelope=40):
     '''
     Compute rhythm feature for waves
 
-    Returns a numpy array of shape (99, nfilt) = (99,?)
+    Returns a numpy array of shape (99, envelope) = (99,40)
     '''
     rhythm_feature = tempogram(
         wave,
         sr=16000,
         onset_envelope=envelope,
         hop_length=0.01,
-        win_length=0.025,
+        win_length=0.025
     )
 
     rhythm_feature = rhythm_feature.astype(np.float32)
@@ -157,19 +189,23 @@ def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=True, scale=True)
     return input_image, fbank
 
 
-def _parse_fn(filename, label, nfilt=40, scale=False, feature='logmel'):
+def _parse_fn(filename, label, nfilt=40, scale=False):
     """
     Function used to compute filterbanks from file name.
     Returns (image, label)
     """
-    if feature not in ['logmel', 'rhythm']:
-        raise ValueError('_parse_fn: feature should be of type logmel or rhythm...')
-    if feature == 'logmel':
-        wave = _loadWavs(filename.numpy())
-        fbank = _logMelFilterbank(wave, nfilt)
-    if feature == 'rhythm':
-        wave = _loadWavs(filename.numpy())
-        fbank = _rhythm(wave, nfilt)
+    wave = _loadWavs(filename.numpy())
+    fbank = _logMelFilterbank(wave, nfilt)
     if scale:
         fbank = _normalize(fbank)
     return fbank, np.asarray(label).astype(np.int32)
+
+
+def _parse_fn_rhythm(filename, label, nfilt=40):
+    """
+    Function used to compute filterbanks from file name.
+    Returns (image, label)
+    """
+    wave = _loadWavs(filename.numpy())
+    fbank = _rhythm(wave, nfilt)
+    return fbank, np.asarray(label).astype(np.int32))
