@@ -146,6 +146,7 @@ def _rhythm(wave, envelope=40):
         wave,
         sr=16000,
         onset_envelope=envelope,
+        win_length=99
     )
 
     rhythm_feature = rhythm_feature.astype(np.float32)
