@@ -72,7 +72,7 @@ def getDatasetAutoencoder(df, batch_size, cache_file=None, shuffle=True, nfilt=4
     return data, steps
 
 
-def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=False):
+def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=40):
     """
     Return a tf.data.Dataset containg filterbanks, labels
     """
@@ -84,7 +84,7 @@ def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=40, sc
         lambda filename, label: tuple(
             tf.py_function(
                 _parse_fn_rhythm,
-                inp=[filename, label, nfilt, scale],
+                inp=[filename, label, nfilt],
                 Tout=[tf.float32, tf.int32]
             )
         ),
