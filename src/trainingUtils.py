@@ -7,6 +7,9 @@ import librosa
 
 from constants import AUDIO_SR, AUDIO_LENGTH
 
+######################################################
+#################### GET DATASETS ####################
+######################################################
 
 def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=False):
     """
@@ -103,6 +106,9 @@ def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=40):
 
     return data, steps
 
+######################################################
+#################### WAVE LOADERS ####################
+######################################################
 
 def _loadWavs(filename):
     """
@@ -117,6 +123,20 @@ def _loadWavs(filename):
 
     return wave.astype(np.float32)
 
+
+def _loadLibrosa(filename):
+    '''
+    return a np array containing the wave and the sampling rate
+    '''
+    wave, _sr = librosa.load(filename)
+    if len(wave) < AUDIO_LENGTH:
+        silence_part = np.random.normal(0, 5, AUDIO_LENGTH-len(wave))
+        wave = np.append(np.asarray(wave), silence_part)
+    return wave.astype(np.float32), _sr
+
+###########################################################
+#################### FEATURE FUNCTIONS ####################
+###########################################################
 
 def _logMelFilterbank(wave, nfilt=40):
     """
@@ -136,25 +156,24 @@ def _logMelFilterbank(wave, nfilt=40):
     return fbank
 
 
-def _rhythm(wave):
+def _rhythm(wave, sr, nfilt):
     '''
     Compute rhythm feature for waves
 
     Returns a numpy array of shape (99, envelope) = (99,40)
     '''
-    hop_length = 40  # samples per frame
+    hop_length = nfilt  # samples per frame, added for clarity
     onset_env = librosa.onset.onset_strength(
-        wave, hop_length=hop_length)
-
-    # _stft = librosa.stft(onset_env, hop_length=1, n_fft=512)
-    # fourier_tempogram = np.absolute(_stft)
-
-    # fourier_tempogram = fourier_tempogram.astype(np.float32)
+        wave, sr=sr, hop_length=hop_length)
 
     tempogram = librosa.feature.tempogram(
         onset_envelope=onset_env, hop_length=hop_length, win_length=99)
     tempogram = tempogram.astype(np.float32)
     return tempogram
+
+#############################################################
+#################### AUXILIARY FUNCTIONS ####################
+#############################################################
 
 def _normalize(data):
     """
@@ -173,6 +192,9 @@ def _scale(data):
     scaled = (data - min_value) / (max_value - min_value + 1e-08)
     return scaled
 
+#################################################
+#################### PARSERS ####################
+#################################################
 
 def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=True, scale=True):
     """
@@ -209,6 +231,6 @@ def _parse_fn_rhythm(filename, label, nfilt=40):
     Function used to compute filterbanks from file name.
     Returns (image, label)
     """
-    wave = _loadWavs(filename.numpy())
-    fbank = _rhythm(wave)
+    wave, _sr = _loadLibrosa(filename.numpy())
+    fbank = _rhythm(wave, _sr, nfilt)
     return fbank, np.asarray(label).astype(np.int32)
