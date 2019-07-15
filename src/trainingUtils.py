@@ -226,7 +226,7 @@ def _parse_fn(filename, label, nfilt=40, scale=False):
     return fbank, np.asarray(label).astype(np.int32)
 
 
-def _parse_fn_rhythm(filename, label, nfilt=40):
+def _parse_fn_rhythm(filename, label, nfilt=552):
     """
     Function used to compute filterbanks from file name.
     Returns (image, label)
