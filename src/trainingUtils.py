@@ -160,7 +160,7 @@ def _rhythm(wave, sr, nfilt):
     '''
     Compute rhythm feature for waves
 
-    Returns a numpy array of shape (99, envelope) = (99,40)
+    Returns a numpy array of shape (99, sr/nfilt) = (99,40)
     '''
     hop_length = nfilt  # samples per frame, added for clarity
     onset_env = librosa.onset.onset_strength(
