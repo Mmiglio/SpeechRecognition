@@ -1,4 +1,4 @@
-from python_speech_features import logfbank
+from python_speech_features import logfbank, mfcc
 from scipy.io import wavfile
 import numpy as np
 import tensorflow as tf
@@ -92,7 +92,7 @@ def _logMelFilterbank(wave, nfilt=40):
     """
     fbank = logfbank(
         wave,
-        samplerate=16000,
+        samplerate=AUDIO_SR,
         winlen=0.025,
         winstep=0.01,
         highfreq=AUDIO_SR/2,
@@ -101,6 +101,19 @@ def _logMelFilterbank(wave, nfilt=40):
 
     fbank = fbank.astype(np.float32)
     return fbank
+
+
+def _mfcc(wave):
+    """
+    Compute Mel Frequency Cepstral Coefficients
+    """
+    mel_coeff = mfcc(
+        wave,
+        samplerate=AUDIO_SR,
+        winlen=0.025,
+        winstep=0.01,
+        highfreq=AUDIO_SR/2
+    )
 
 
 def _normalize(data):
@@ -121,7 +134,7 @@ def _scale(data):
     return scaled
 
 
-def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=True, scale=True):
+def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=False, scale=False):
     """
     Function used to compute filterbanks from file name.
     Returns (image, image) for autoencoder training.
