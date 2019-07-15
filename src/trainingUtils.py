@@ -75,7 +75,7 @@ def getDatasetAutoencoder(df, batch_size, cache_file=None, shuffle=True, nfilt=4
     return data, steps
 
 
-def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=40):
+def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=552):
     """
     Return a tf.data.Dataset containg filterbanks, labels
     """
