@@ -5,7 +5,7 @@ import tensorflow as tf
 import os
 import librosa
 
-from constants import AUDIO_SR, AUDIO_LENGTH
+from constants import AUDIO_SR, AUDIO_LENGTH, LIBROSA_AUDIO_LENGTH
 
 ######################################################
 #################### GET DATASETS ####################
@@ -129,7 +129,7 @@ def _loadLibrosa(filename):
     return a np array containing the wave and the sampling rate
     '''
     wave, _sr = librosa.load(filename)
-    if len(wave) < AUDIO_LENGTH:
+    if len(wave) < LIBROSA_AUDIO_LENGTH:
         silence_part = np.random.normal(0, 5, AUDIO_LENGTH-len(wave))
         wave = np.append(np.asarray(wave), silence_part)
     return wave.astype(np.float32), _sr

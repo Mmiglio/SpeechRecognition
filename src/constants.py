@@ -7,6 +7,9 @@ AUDIO_SR = 16000
 # Length of a single wav
 AUDIO_LENGTH = 16000
 
+# Length of a single wav for Librosa
+LIBROSA_AUDIO_LENGTH = 22050
+
 categories = {
     '_background_noise_': 30,
     'bed': 16,
