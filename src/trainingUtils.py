@@ -75,7 +75,7 @@ def getDatasetAutoencoder(df, batch_size, cache_file=None, shuffle=True, nfilt=4
     return data, steps
 
 
-def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=552):
+def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=404):
     """
     Return a tf.data.Dataset containg filterbanks, labels
     """
@@ -226,7 +226,7 @@ def _parse_fn(filename, label, nfilt=40, scale=False):
     return fbank, np.asarray(label).astype(np.int32)
 
 
-def _parse_fn_rhythm(filename, label, nfilt=552):
+def _parse_fn_rhythm(filename, label, nfilt=404):
     """
     Function used to compute filterbanks from file name.
     Returns (image, label)
