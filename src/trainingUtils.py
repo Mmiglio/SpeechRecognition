@@ -75,7 +75,7 @@ def getDatasetAutoencoder(df, batch_size, cache_file=None, shuffle=True, nfilt=4
     return data, steps
 
 
-def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=404):
+def getDatasetRhythm(df, batch_size, cache_file=None, shuffle=True, nfilt=552):
     """
     Return a tf.data.Dataset containg filterbanks, labels
     """
@@ -128,9 +128,9 @@ def _loadLibrosa(filename):
     '''
     return a np array containing the wave and the sampling rate
     '''
-    wave, _sr = librosa.load(filename,sr=AUDIO_LENGTH)
-    if len(wave) < AUDIO_LENGTH:
-        silence_part = np.random.normal(0, 5, AUDIO_LENGTH-len(wave))
+    wave, _sr = librosa.load(filename)
+    if len(wave) < LIBROSA_AUDIO_LENGTH:
+        silence_part = np.random.normal(0, 5, LIBROSA_AUDIO_LENGTH-len(wave))
         wave = np.append(np.asarray(wave), silence_part)
     return wave.astype(np.float32), _sr
 
@@ -226,7 +226,7 @@ def _parse_fn(filename, label, nfilt=40, scale=False):
     return fbank, np.asarray(label).astype(np.int32)
 
 
-def _parse_fn_rhythm(filename, label, nfilt=404):
+def _parse_fn_rhythm(filename, label, nfilt=552):
     """
     Function used to compute filterbanks from file name.
     Returns (image, label)
