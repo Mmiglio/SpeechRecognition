@@ -42,12 +42,13 @@ def cnnModel(input_shape=(99, 40)):
 
     # Classification layers
     model.add(tf.keras.layers.Flatten())
-    model.add(tf.keras.layers.Dropout(0.4))
+    model.add(tf.keras.layers.Dense(512, name='features512'))
     model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.Dense(512, activation='relu'))
+    model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.Dropout(0.4))
+    model.add(tf.keras.layers.Dense(256, name='features256'))
     model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.Dense(256, activation='relu'))
+    model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.Dropout(0.4))
     model.add(tf.keras.layers.Dense(30, activation='softmax'))
 
