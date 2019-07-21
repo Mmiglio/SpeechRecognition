@@ -1,17 +1,21 @@
-from python_speech_features import logfbank, mfcc
-from scipy.io import wavfile
+'''
+Training utilites for dataset preparation
+'''
+import os
+
+import librosa
 import numpy as np
 import tensorflow as tf
-import os
-import librosa
+from python_speech_features import logfbank, mfcc
+from scipy.io import wavfile
 
-from constants import AUDIO_SR, AUDIO_LENGTH, LIBROSA_AUDIO_LENGTH
+from constants import AUDIO_LENGTH, AUDIO_SR, LIBROSA_AUDIO_LENGTH
 
 ######################################################
 #################### GET DATASETS ####################
 ######################################################
 
-def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=False):
+def getDataset(df, batch_size, cache_file=None, shuffle=True, parse_param=(0.025, 0.01, 40), scale=False):
     """
     Return a tf.data.Dataset containg filterbanks, labels
     """
@@ -23,7 +27,7 @@ def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=Fa
         lambda filename, label: tuple(
             tf.py_function(
                 _parse_fn,
-                inp=[filename, label, nfilt, scale],
+                inp=[filename, label, parse_param, scale],
                 Tout=[tf.float32, tf.int32]
                 )
         ),
@@ -170,7 +174,8 @@ def _loadLibrosa(filename):
 #################### FEATURE FUNCTIONS ####################
 ###########################################################
 
-def _logMelFilterbank(wave, nfilt=40):
+
+def _logMelFilterbank(wave, parse_param=(0.025, 0.01, 40)):
     """
     Compute the log Mel-Filterbanks
     Returns a numpy array of shape (99, nfilt) = (99,40)
@@ -178,10 +183,10 @@ def _logMelFilterbank(wave, nfilt=40):
     fbank = logfbank(
         wave,
         samplerate=16000,
-        winlen=0.025,
-        winstep=0.01,
+        winlen=parse_param[0],
+        winstep=parse_param[1],
         highfreq=AUDIO_SR/2,
-        nfilt=nfilt
+        nfilt=parse_param[2]
         )
 
     fbank = fbank.astype(np.float32)
@@ -264,13 +269,13 @@ def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=True, scale=True)
     return input_image, fbank
 
 
-def _parse_fn(filename, label, nfilt=40, scale=False):
+def _parse_fn(filename, label, parse_param=(0.025, 0.01, 40), scale=False):
     """
     Function used to compute filterbanks from file name.
     Returns (image, label)
     """
     wave = _loadWavs(filename.numpy())
-    fbank = _logMelFilterbank(wave, nfilt)
+    fbank = _logMelFilterbank(wave, parse_param)
     if scale:
         fbank = _normalize(fbank)
     return fbank, np.asarray(label).astype(np.int32)
