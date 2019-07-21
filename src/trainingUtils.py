@@ -1,4 +1,4 @@
-from python_speech_features import logfbank
+from python_speech_features import logfbank, mfcc
 from scipy.io import wavfile
 import numpy as np
 import tensorflow as tf
@@ -23,6 +23,38 @@ def getDataset(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=Fa
         lambda filename, label: tuple(
             tf.py_function(
                 _parse_fn,
+                inp=[filename, label, nfilt, scale],
+                Tout=[tf.float32, tf.int32]
+                )
+        ),
+        num_parallel_calls=os.cpu_count()
+    )
+
+    if cache_file:
+        data = data.cache(cache_file)
+
+    if shuffle:
+        data = data.shuffle(buffer_size=df.shape[0])
+
+    data = data.batch(batch_size).prefetch(buffer_size=1)
+
+    steps = df.shape[0] // batch_size
+
+    return data, steps
+
+
+def getDataset_mfcc(df, batch_size, cache_file=None, shuffle=True, nfilt=40, scale=False):
+    """
+    Return a tf.data.Dataset containg filterbanks, labels
+    """
+    data = tf.data.Dataset.from_tensor_slices(
+        (df['files'].tolist(), df['labels'].tolist())
+    )
+
+    data = data.map(
+        lambda filename, label: tuple(
+            tf.py_function(
+                _parse_fn_mfcc,
                 inp=[filename, label, nfilt, scale],
                 Tout=[tf.float32, tf.int32]
                 )
@@ -156,6 +188,24 @@ def _logMelFilterbank(wave, nfilt=40):
     return fbank
 
 
+def _mfcc(wave, nfilt=40):
+    """
+    Compute the Mel Frequency Cepstal Coefficients
+    Returns a numpy array of shape (99, nfilt) = (99,40)
+    """
+    melfcc = mfcc(
+        wave,
+        samplerate=16000,
+        winlen=0.025,
+        winstep=0.01,
+        highfreq=AUDIO_SR/2,
+        nfilt=nfilt
+        )
+
+    melfcc = melfcc.astype(np.float32)
+    return melfcc
+
+
 def _rhythm(wave, sr, nfilt):
     '''
     Compute rhythm feature for waves
@@ -224,6 +274,18 @@ def _parse_fn(filename, label, nfilt=40, scale=False):
     if scale:
         fbank = _normalize(fbank)
     return fbank, np.asarray(label).astype(np.int32)
+
+
+def _parse_fn_mfcc(filename, label, nfilt=40, scale=False):
+    """
+    Function used to compute filterbanks from file name.
+    Returns (image, label)
+    """
+    wave = _loadWavs(filename.numpy())
+    melfcc = _mfcc(wave, nfilt)
+    if scale:
+        melfcc = _normalize(melfcc)
+    return melfcc, np.asarray(label).astype(np.int32)
 
 
 def _parse_fn_rhythm(filename, label, nfilt=552):
