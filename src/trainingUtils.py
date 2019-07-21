@@ -183,10 +183,10 @@ def _logMelFilterbank(wave, parse_param=(0.025, 0.01, 40)):
     fbank = logfbank(
         wave,
         samplerate=16000,
-        winlen=parse_param[0],
-        winstep=parse_param[1],
+        winlen=float(parse_param[0]),
+        winstep=float(parse_param[1]),
         highfreq=AUDIO_SR/2,
-        nfilt=parse_param[2]
+        nfilt=int(parse_param[2])
         )
 
     fbank = fbank.astype(np.float32)
