@@ -106,3 +106,5 @@ def modular_cnn_model(input_shape=(99, 40)):
     model.add(tf.keras.layers.Dropout(0.4))
     model.add(tf.keras.layers.Dense(128, activation='relu', name='FEATURES'))
     model.add(tf.keras.layers.Dense(30, activation='softmax'))
+
+    return model
