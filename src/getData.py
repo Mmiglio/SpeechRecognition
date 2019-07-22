@@ -3,9 +3,9 @@ import requests
 import tarfile
 import pandas as pd
 
-# Dictionary containing categories + encoded value
-from .constants import categories, inv_categories
-
+# pylint: disable=import-error
+from constants import categories, inv_categories
+# pylint: enable=import-error
 
 def downloadSpeechData(data_path='speechData/'):
     """
