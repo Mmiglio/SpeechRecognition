@@ -190,7 +190,7 @@ def _logMelFilterbank(wave, parse_param=(0.025, 0.01, 40), nfft=512):
         winstep=float(parse_param[1]),
         highfreq=AUDIO_SR/2,
         nfilt=int(parse_param[2]),
-        nfft=nfft
+        nfft=int(nfft)
         )
 
     fbank = fbank.astype(np.float32)
