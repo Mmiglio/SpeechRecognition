@@ -230,6 +230,7 @@ def _rhythm(wave, sr, nfilt):
 #################### AUXILIARY FUNCTIONS ####################
 #############################################################
 
+
 def _normalize(data):
     """
     Normalize feature vectors
@@ -251,7 +252,7 @@ def _scale(data):
 #################### PARSERS ####################
 #################################################
 
-def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=True, scale=True):
+def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=False, scale=False):
     """
     Function used to compute filterbanks from file name.
     Returns (image, image) for autoencoder training.

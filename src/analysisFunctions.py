@@ -79,7 +79,7 @@ def plot_confusion_matrix(cm,
 
 def showResultsOC(y_pred, y_true):
     """
-    Print statistics for the current prediction
+    Print statistics for One Class problems
     """
     from sklearn.metrics import (
         accuracy_score, recall_score,
