@@ -18,7 +18,7 @@ from constants import AUDIO_LENGTH, AUDIO_SR, LIBROSA_AUDIO_LENGTH
 #################### GET DATASETS ####################
 ######################################################
 
-def getDataset(df, batch_size, cache_file=None, shuffle=True, parse_param=(0.025, 0.01, 40), scale=False):
+def getDataset(df, batch_size, cache_file=None, shuffle=True, parse_param=(0.025, 0.01, 40), nfft=512, scale=False):
     """
     Return a tf.data.Dataset containg filterbanks, labels
     """
@@ -30,7 +30,7 @@ def getDataset(df, batch_size, cache_file=None, shuffle=True, parse_param=(0.025
         lambda filename, label: tuple(
             tf.py_function(
                 _parse_fn,
-                inp=[filename, label, parse_param, scale],
+                inp=[filename, label, parse_param, nfft, scale],
                 Tout=[tf.float32, tf.int32]
                 )
         ),
@@ -178,7 +178,7 @@ def _loadLibrosa(filename):
 ###########################################################
 
 
-def _logMelFilterbank(wave, parse_param=(0.025, 0.01, 40)):
+def _logMelFilterbank(wave, parse_param=(0.025, 0.01, 40), nfft=512):
     """
     Compute the log Mel-Filterbanks
     Returns a numpy array of shape (99, nfilt) = (99,40)
@@ -189,7 +189,8 @@ def _logMelFilterbank(wave, parse_param=(0.025, 0.01, 40)):
         winlen=float(parse_param[0]),
         winstep=float(parse_param[1]),
         highfreq=AUDIO_SR/2,
-        nfilt=int(parse_param[2])
+        nfilt=int(parse_param[2]),
+        nfft=nfft
         )
 
     fbank = fbank.astype(np.float32)
@@ -273,13 +274,13 @@ def _parse_fn_autoencoder(filename, nfilt=40, add_noise=False, scale=False):
     return input_image, fbank
 
 
-def _parse_fn(filename, label, parse_param=(0.025, 0.01, 40), scale=False):
+def _parse_fn(filename, label, parse_param=(0.025, 0.01, 40), nfft=512, scale=False):
     """
     Function used to compute filterbanks from file name.
     Returns (image, label)
     """
     wave = _loadWavs(filename.numpy())
-    fbank = _logMelFilterbank(wave, parse_param)
+    fbank = _logMelFilterbank(wave, parse_param, nfft)
     if scale:
         fbank = _normalize(fbank)
     return fbank, np.asarray(label).astype(np.int32)
