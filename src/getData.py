@@ -4,7 +4,7 @@ import tarfile
 import pandas as pd
 
 # Dictionary containing categories + encoded value
-from constants import categories, inv_categories
+from .constants import categories, inv_categories
 
 
 def downloadSpeechData(data_path='speechData/'):
