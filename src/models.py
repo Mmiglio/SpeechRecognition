@@ -227,7 +227,7 @@ def rnn_att_model(input_shape=(99, 40),
     # Fetch input
     inputs = tf.keras.Input(shape=input_shape)
     reshape = tf.keras.layers.Reshape(
-        input_shape=input_shape, target_shape=(99, 40, 1))(inputs)
+        input_shape=input_shape, target_shape=(int(input_shape[0]), int(input_shape[1]), 1))(inputs)
 
     # Normalization Layer
     layer_out = tf.keras.layers.BatchNormalization()(reshape)
