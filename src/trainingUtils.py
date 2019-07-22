@@ -94,7 +94,7 @@ def getDatasetAutoencoder(df, batch_size, cache_file=None, shuffle=True, nfilt=4
         lambda filename, label: tuple(
             tf.py_function(
                 _parse_fn_autoencoder,
-                inp=[filename, label, nfilt, add_noise, scale],
+                inp=[filename, nfilt, add_noise, scale],
                 Tout=[tf.float32, tf.float32]
                 )
         ),
@@ -255,7 +255,7 @@ def _scale(data):
 #################### PARSERS ####################
 #################################################
 
-def _parse_fn_autoencoder(filename, label, nfilt=40, add_noise=False, scale=False):
+def _parse_fn_autoencoder(filename, nfilt=40, add_noise=False, scale=False):
     """
     Function used to compute filterbanks from file name.
     Returns (image, image) for autoencoder training.
