@@ -9,7 +9,10 @@ import tensorflow as tf
 from python_speech_features import logfbank, mfcc
 from scipy.io import wavfile
 
+# pylint: disable=no-name-in-module
 from constants import AUDIO_LENGTH, AUDIO_SR, LIBROSA_AUDIO_LENGTH
+#pylint: enable=no-name-in-module
+
 
 ######################################################
 #################### GET DATASETS ####################
