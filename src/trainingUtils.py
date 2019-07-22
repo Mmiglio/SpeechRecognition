@@ -114,6 +114,7 @@ def _mfcc(wave):
         winstep=0.01,
         highfreq=AUDIO_SR/2
     )
+    return mel_coeff
 
 
 def _normalize(data):
