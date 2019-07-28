@@ -147,7 +147,7 @@ def Inception(input_shape=(99, 40)):
 
     input_layer = tf.keras.layers.Input(input_shape)
 
-    reshape_layer = tf.keras.layers.Reshape(input_shape=input_shape, target_shape=(99, 40, 1))(input_layer)
+    reshape_layer = tf.keras.layers.Reshape(target_shape=(99, 40, 1))(input_layer)
 
     x = tf.keras.layers.Conv2D(32, (6, 4), padding='same', strides=(2, 2), activation='relu')(reshape_layer)
     x = tf.keras.layers.MaxPooling2D((3, 2), padding='same', strides=(1, 1))(x)
